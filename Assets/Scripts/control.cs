@@ -2,6 +2,46 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+enum MagicEffects
+{
+    Poison = 1,
+    Ice = 2,
+    Lightning = 4,
+    Fire = 8,
+    Lava = 16,
+}
+
+enum WindowHint
+{
+    Frameless = 1,
+    FullScreen = 2,
+    WithoutBar = 4,
+    HalfOpacity = 8,
+    ClickHandler = 16,
+    DragHandler = 32,
+    VerticalScrollBar = 64,
+    Minimize = 128,
+}
+
+enum PlayerState
+{
+    Run,
+    Idle,
+    StaminaOut,
+}
+
+class Example
+{
+    void smth()
+    {
+        bool isPoison;
+        bool isLightning;
+        bool isFire;
+        bool isLAva;
+        bool isIce;
+    }
+}
+
 public class control : MonoBehaviour
 {
     //ТИП ИМЯ(ТИП ИМЯ, ТИП ИМЯ) { ТЕЛО_ФУНКЦИИ }
@@ -9,7 +49,7 @@ public class control : MonoBehaviour
     //input = GetComponent<PlayerInput>();
 
 
-    
+
     PlayerInput input = null;
     Rigidbody2D rigidbody2D = null;
     Collider2D collider2D = null;
@@ -31,6 +71,12 @@ public class control : MonoBehaviour
     [SerializeField] public float staminaRun = 10f;
     [SerializeField] private float staminaMax = 40f;
     [SerializeField] private float healthMax = 40f;
+
+    int magicEffects = 0;
+    void refreshEffects()
+    {
+        magicEffects = 0; //ЭТО ИМБА
+    }
 
     public static control Instance { get; private set; }
     void Awake()
@@ -64,33 +110,109 @@ public class control : MonoBehaviour
         return first == sec;
     }
 
+    void InitWindow(int flags)
+    {
+        string output = ""; //TODO заменить на List<string>
+        if((flags & (int)WindowHint.Frameless) != 0)
+        {
+            output += " безрамочное";
+        }
+        if ((flags & (int)WindowHint.FullScreen) != 0)
+        {
+            output += " полноэкранное";
+        }
+        if ((flags & (int)WindowHint.WithoutBar) != 0)
+        {
+            output += " без меню";
+        }
+        if ((flags & (int)WindowHint.HalfOpacity) != 0)
+        {
+            output += " полупрозрачное";
+        }
+        if ((flags & (int)WindowHint.ClickHandler) != 0)
+        {
+            output += " поддерживает нажатие";
+        }
+        if ((flags & (int)WindowHint.DragHandler) != 0)
+        {
+            output += " поддерживает Drag'n'Drop";
+        }
+        if ((flags & (int)WindowHint.VerticalScrollBar) != 0)
+        {
+            output += " поддерживает вертикальный скролл бар";
+        }
+        if ((flags & (int)WindowHint.Minimize) != 0)
+        {
+            output += " сворачивается";
+        }
+        print();
+    }
     void Start()
     {
         input = GetComponent<PlayerInput>();
         rigidbody2D = GetComponent<Rigidbody2D>();
         collider2D = GetComponent<Collider2D>();
-        //RGBA = int;   
-        //00FF00;
-        //Первый байт - красный цвет
-        //Второй байт - зелёный.
-        uint color = 0xFF77FF;
-        uint color2 = 0b11111111000000001111111111111111;
-        uint color3 = 4294967295;
 
+        int windowHint = 0;
+        windowHint |= (int)WindowHint.FullScreen;
+        windowHint |= (int)WindowHint.ClickHandler;
+        windowHint |= (int)WindowHint.DragHandler;
+
+        InitWindow(windowHint);
+    }
+
+    void BlaBla()
+    {
         /*
-            1 - 1;
-            2- 2;
-            9 - 9;
-            10 - A;
-            11 - B;
-            12 - c;
-            13 - d;
-            14 - e;
-            15 - f;
-        */
+enum MagicEffects
+{
+    Poison = 1,
+    Ice = 2,
+    Lightning = 4,
+    Fire = 8,
+    Lava = 16,
 
-        //1111 - F, 1111 - F, 0000 - 0, 0000 - 0, 
+}
+*/
 
+        // | - ты прибаляешь к числу новые биты
+        // & - ты проверяешь на наличие каких-то битов
+
+        int window = 0;
+
+        int effects = 0;
+        //effects == 0b0;
+        effects |= (int)MagicEffects.Lightning;
+        //effects == 0b100;
+        effects |= (int)MagicEffects.Fire;
+        //effects == 0b1100;
+        effects |= (int)MagicEffects.Poison;
+        //effects == 0b1101;
+        //effects == 0b1101;
+        //0b1101 & 0b100 = 0100 (4)
+        if ((effects & (int)MagicEffects.Lightning) != 0)
+        {
+            print("Lightning");
+        }
+        //effects == 0b1101;
+        //0b1101 & 0b0001 = 0001 // 00000000000000000
+        if ((effects & (int)MagicEffects.Poison) != 0)
+        {
+            print("Poison");
+        }
+        //effects == 0b1101; 8 в двоичной системе исчесления это
+        //0b1101 & 0b1000 = 1000 // 000000000000000000
+        if ((effects & (int)MagicEffects.Fire) != 0)
+        {
+            print("Fire");
+        }
+        //effects == 0b1101; 16 в двоичной системе исчесления это
+        //0b1101 & 0b10000 = 00000
+        if ((effects & (int)MagicEffects.Lava) != 0)
+        {
+            print("Lava"); //Never rich
+        }
+        // "|" - Или, "&" - И, ^ XOR 1 ^ 1 = 0; << n ; >> n; ~ - наоборот
     }
 
     void OnJump()
@@ -104,15 +226,16 @@ public class control : MonoBehaviour
     }
     void OnMove()
     {
-        velocity.x = input.actions.FindAction("Move").ReadValue<Vector2>().x * speed;        
+        velocity.x = input.actions.FindAction("Move").ReadValue<Vector2>().x * speed;
     }
 
-    void OnTriggerEnter2D(Collider2D other) {
+    void OnTriggerEnter2D(Collider2D other)
+    {
         if (other.CompareTag("EnemyWeapon"))
         {
             print("Игрок вошёл в зону врага!");
+        }
     }
-}
 
     void Update()
     {
