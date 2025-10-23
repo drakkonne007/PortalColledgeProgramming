@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -112,107 +115,49 @@ public class control : MonoBehaviour
 
     void InitWindow(int flags)
     {
-        string output = ""; //TODO заменить на List<string>
+        List<string> output = new(); //TODO заменить на List<string>
+        List<int> numbers = new();
+
         if((flags & (int)WindowHint.Frameless) != 0)
         {
-            output += " безрамочное";
+            output.Add("безрамочное");
         }
         if ((flags & (int)WindowHint.FullScreen) != 0)
         {
-            output += " полноэкранное";
+            output.Add("полноэкранное");
         }
         if ((flags & (int)WindowHint.WithoutBar) != 0)
         {
-            output += " без меню";
+            output.Add("без меню");
         }
         if ((flags & (int)WindowHint.HalfOpacity) != 0)
         {
-            output += " полупрозрачное";
+            output.Add("полупрозрачное");
         }
         if ((flags & (int)WindowHint.ClickHandler) != 0)
         {
-            output += " поддерживает нажатие";
+            output.Add("поддерживает нажатие");
         }
         if ((flags & (int)WindowHint.DragHandler) != 0)
         {
-            output += " поддерживает Drag'n'Drop";
+            output.Add("поддерживает Drag'n'Drop");
         }
         if ((flags & (int)WindowHint.VerticalScrollBar) != 0)
         {
-            output += " поддерживает вертикальный скролл бар";
+            output.Add("поддерживает вертикальный скролл бар");
         }
         if ((flags & (int)WindowHint.Minimize) != 0)
         {
-            output += " сворачивается";
+            output.Add("сворачивается");
         }
-        print();
+        string result = string.Join(",", output);
+        print(result);
     }
     void Start()
     {
         input = GetComponent<PlayerInput>();
         rigidbody2D = GetComponent<Rigidbody2D>();
         collider2D = GetComponent<Collider2D>();
-
-        int windowHint = 0;
-        windowHint |= (int)WindowHint.FullScreen;
-        windowHint |= (int)WindowHint.ClickHandler;
-        windowHint |= (int)WindowHint.DragHandler;
-
-        InitWindow(windowHint);
-    }
-
-    void BlaBla()
-    {
-        /*
-enum MagicEffects
-{
-    Poison = 1,
-    Ice = 2,
-    Lightning = 4,
-    Fire = 8,
-    Lava = 16,
-
-}
-*/
-
-        // | - ты прибаляешь к числу новые биты
-        // & - ты проверяешь на наличие каких-то битов
-
-        int window = 0;
-
-        int effects = 0;
-        //effects == 0b0;
-        effects |= (int)MagicEffects.Lightning;
-        //effects == 0b100;
-        effects |= (int)MagicEffects.Fire;
-        //effects == 0b1100;
-        effects |= (int)MagicEffects.Poison;
-        //effects == 0b1101;
-        //effects == 0b1101;
-        //0b1101 & 0b100 = 0100 (4)
-        if ((effects & (int)MagicEffects.Lightning) != 0)
-        {
-            print("Lightning");
-        }
-        //effects == 0b1101;
-        //0b1101 & 0b0001 = 0001 // 00000000000000000
-        if ((effects & (int)MagicEffects.Poison) != 0)
-        {
-            print("Poison");
-        }
-        //effects == 0b1101; 8 в двоичной системе исчесления это
-        //0b1101 & 0b1000 = 1000 // 000000000000000000
-        if ((effects & (int)MagicEffects.Fire) != 0)
-        {
-            print("Fire");
-        }
-        //effects == 0b1101; 16 в двоичной системе исчесления это
-        //0b1101 & 0b10000 = 00000
-        if ((effects & (int)MagicEffects.Lava) != 0)
-        {
-            print("Lava"); //Never rich
-        }
-        // "|" - Или, "&" - И, ^ XOR 1 ^ 1 = 0; << n ; >> n; ~ - наоборот
     }
 
     void OnJump()

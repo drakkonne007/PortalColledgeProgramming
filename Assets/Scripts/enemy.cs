@@ -33,10 +33,13 @@ public class enemy : MonoBehaviour
     float attackTime = 999999;
     float restTime = 99999;
     [SerializeField] float radius = 0.5f; //Радиус
+    [SerializeField] float speed;
     EnemyState enemyState = EnemyState.dontSee;
+    Rigidbody2D rigidbody2D;
     void Start()
     {
-        stamina = maxStamina;        
+        stamina = maxStamina;
+        rigidbody2D = GetComponentInChildren<Rigidbody2D>();
     }
 
     void doSeeSplash(bool bSee)
@@ -60,6 +63,7 @@ public class enemy : MonoBehaviour
 
     void move()
     {
+        print("See");
         if (stamina <= 0 || restTime < 1)
         {
             if (stamina <= 0)
@@ -71,9 +75,14 @@ public class enemy : MonoBehaviour
         else
         {
             enemyState = EnemyState.stalking;
-            transform.position = Vector3.Lerp(
-            transform.position, control.Instance.transform.position
-            , Time.deltaTime);
+            print("Add force");
+            float x = control.Instance.transform.position.x - transform.position.x;
+            float y = control.Instance.transform.position.y - transform.position.y;
+
+            float angle = math.atan2(y,x);
+
+            rigidbody2D.AddForce(new Vector2(math.cos(angle), math.sin(angle)) * speed * rigidbody2D.mass * Time.deltaTime);
+
             stamina -= Time.deltaTime;
             stamina = math.clamp(stamina, 0, maxStamina);
         }        
